@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="leaflet" type="kotlin.js">
-    <CLASSES>
-      <root url="file://$USER_HOME$/Downloads/leaflet/leaflet.js" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
