@@ -6,7 +6,7 @@ lib/
 *.jar
 *.zip
 *.rar
-*.DS_Store
+.DS_Store
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 /out/
