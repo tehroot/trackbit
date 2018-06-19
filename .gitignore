@@ -1,0 +1,8 @@
+target/
+lib/
+*.imi
+*.log
+*.class
+*.jar
+*.zip
+*.rar
