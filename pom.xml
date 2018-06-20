@@ -7,6 +7,8 @@
 <groupId>org.tehroot</groupId>
 <artifactId>Oauthflow</artifactId>
 <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>new-spark-project</name>
     <dependencies>
         <dependency>
             <groupId>com.sparkjava</groupId>
@@ -32,6 +34,28 @@
         <configuration>
             <source>1.8</source>
             <target>1.8</target>
+        </configuration>
+    </plugin>
+    <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+            <execution>
+                <phase>package</phase>
+                <goals>
+                    <goal>single</goal>
+                </goals>
+            </execution>
+        </executions>
+        <configuration>
+            <descriptorRefs>
+                <!-- This tells Maven to include all dependencies -->
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+            </descriptorRefs>
+            <archive>
+                <manifest>
+                    <mainClass>Oauthflow.main</mainClass>
+                </manifest>
+            </archive>
         </configuration>
     </plugin>
 </plugins>
