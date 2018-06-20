@@ -12,6 +12,11 @@
     <plugin>
         <dependencies>
             <dependency>
+                <groupId>com.googlecode.json-simple</groupId>
+                <artifactId>json-simple</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+            <dependency>
                 <groupId>com.sparkjava</groupId>
                 <artifactId>spark-core</artifactId>
                 <version>2.7.2</version>
@@ -20,11 +25,6 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>1.6.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.googlecode.json-simple</groupId>
-                <artifactId>json-simple</artifactId>
-                <version>1.1.1</version>
             </dependency>
         </dependencies>
         <groupId>org.apache.maven.plugins</groupId>

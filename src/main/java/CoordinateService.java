@@ -1,7 +1,9 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CoordinateService {
