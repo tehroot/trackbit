@@ -53,7 +53,8 @@
             </descriptorRefs>
             <archive>
                 <manifest>
-                    <mainClass>Oauthflow.main</mainClass>
+                    <addClasspath>true</addClasspath>
+                    <mainClass>Main</mainClass>
                 </manifest>
             </archive>
         </configuration>
