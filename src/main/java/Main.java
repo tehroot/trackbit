@@ -11,8 +11,8 @@ public class Main {
         post("/coordinate/add", (request, response) -> {
             try {
                 list = Arrays.asList(request.body().split(","));
-                double latitude = Double.parseDouble(list.get(0).replaceAll("\\[|\\]", ""));
-                double longitude = Double.parseDouble(list.get(1).replaceAll("\\[|\\]", ""));
+                double latitude = Math.round(Double.parseDouble(list.get(0).replaceAll("\\[|\\]", "")) * 100000d) / 100000d;
+                double longitude = Math.round(Double.parseDouble(list.get(1).replaceAll("\\[|\\]", "")) * 100000d) / 100000d;
                 coordinateService.add(latitude,longitude);
             } catch (ArrayIndexOutOfBoundsException aie) {
                 aie.printStackTrace();
