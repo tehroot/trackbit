@@ -1,6 +1,6 @@
 target/
 lib/
-*.imi
+*.iml
 *.log
 *.class
 *.jar

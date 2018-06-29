@@ -6,9 +6,9 @@ public class Main {
     static CoordinateService coordinateService = new CoordinateService();
     static List<String> list;
     public static void main(String[] args) {
-        staticFiles.location("/");
+        staticFileLocation("/resources");
         port(8080);
-        get("/", (req, res) -> {res.redirect("index.html"); return null;});
+        get("/", (req, res) -> {res.redirect("index.html"); return "";});
         post("/coordinate", (request, response) -> {
             try {
                 list = Arrays.asList(request.body().split(","));
@@ -20,6 +20,10 @@ public class Main {
             }
             return "";
         });
-        get("/coordinate",(request, response) -> coordinateService.returnPolyLine());
+        get("/coordinate",(request, response) -> {
+            response.header("Access-Control-Allow-Origin", "*");
+            response.header("Access-Control-Allow-Methods", "GET");
+            return coordinateService.returnPolyLine();
+        });
     }
 }
