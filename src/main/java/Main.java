@@ -6,8 +6,9 @@ public class Main {
     static CoordinateService coordinateService = new CoordinateService();
     static List<String> list;
     public static void main(String[] args) {
+        staticFiles.location("/");
         port(8080);
-        get("/", (req, res) -> "Hello World");
+        get("/", (req, res) -> {res.redirect("index.html"); return null;});
         post("/coordinate", (request, response) -> {
             try {
                 list = Arrays.asList(request.body().split(","));
