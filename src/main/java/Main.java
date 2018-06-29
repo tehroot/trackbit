@@ -6,7 +6,7 @@ public class Main {
     static CoordinateService coordinateService = new CoordinateService();
     static List<String> list;
     public static void main(String[] args) {
-        staticFileLocation("/resources");
+        staticFileLocation("/public");
         port(8080);
         get("/", (req, res) -> {res.redirect("index.html"); return "";});
         post("/coordinate", (request, response) -> {

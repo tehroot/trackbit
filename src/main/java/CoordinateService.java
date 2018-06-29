@@ -42,4 +42,9 @@ public class CoordinateService {
             array.add(temp);
         });
     }
+
+    public void clearPolyLineData(){
+
+    }
+
 }
