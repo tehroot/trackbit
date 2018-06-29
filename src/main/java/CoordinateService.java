@@ -28,6 +28,14 @@ public class CoordinateService {
         return obj;
     }
 
+    public String clearPolyLine(){
+        clearPolyLineData(coordinateMap, polyArray);
+        if(coordinateMap.size() == 0 && polyArray.size() == 0){
+            return "clear";
+        }
+        return "";
+    }
+
     public CoordinateService(){
 
     }
@@ -43,8 +51,9 @@ public class CoordinateService {
         });
     }
 
-    public void clearPolyLineData(){
-
+    public void clearPolyLineData(Map<Integer, coordinate> coordinateMap, JSONArray array){
+        array.clear();
+        coordinateMap.clear();
     }
 
 }

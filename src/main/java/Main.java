@@ -23,7 +23,9 @@ public class Main {
         get("/coordinate",(request, response) -> {
             response.header("Access-Control-Allow-Origin", "*");
             response.header("Access-Control-Allow-Methods", "GET");
+            response.type("application/json");
             return coordinateService.returnPolyLine();
         });
+        post("/clear", ((request, response) -> coordinateService.clearPolyLine()));
     }
 }
