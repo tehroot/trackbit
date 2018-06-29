@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
         port(8080);
         get("/", (req, res) -> "Hello World");
-        post("/coordinate/add", (request, response) -> {
+        post("/coordinate", (request, response) -> {
             try {
                 list = Arrays.asList(request.body().split(","));
                 double latitude = Math.round(Double.parseDouble(list.get(0).replaceAll("\\[|\\]", "")) * 100000d) / 100000d;
@@ -19,11 +19,6 @@ public class Main {
             }
             return "";
         });
-        get("/coordinate",(request, response) -> coordinateService.findall().toString());
-        get("/listall",(request, response) -> {
-            response.header("Access-Control-Allow-Origin", "*");
-            response.header("Access-Control-Allow-Methods", "GET");
-            return coordinateService.returnPolyLine();
-        });
+        get("/coordinate",(request, response) -> coordinateService.returnPolyLine());
     }
 }
