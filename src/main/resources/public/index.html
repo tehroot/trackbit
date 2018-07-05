@@ -30,11 +30,6 @@
     for(var i = 0; i < latlngs.length; i++){
       var latlng = latlngs[i];
       var polyline = L.polyline(latlng, {color: 'red'}).addTo(map);
-      for(var j = 0; j < latlng.length; j++){
-        console.log(latlng[j]);
-        //create marker from stored double array
-        var marker = L.marker(latlng[j]).addTo(map);
-      }
     }
     // raster tile layer from openstreetmap{x}{y} params are location data passed from initial map load
     
