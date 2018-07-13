@@ -6,18 +6,15 @@ public class Main {
     static CoordinateService coordinateService = new CoordinateService();
     public static void main(String[] args) {
         final List<String> list;
-        final byte[] byteList;
         staticFileLocation("/public");
         port(8080);
         get("/", (req, res) -> {res.redirect("index.html"); return "";});
         post("/coordinate", (request, response) -> {
             try {
-                byteList = request.bodyAsBytes();
+                byte[] byteList = request.bodyAsBytes();
                 ObjectMapper objectMapper = new ObjectMapper();
                 Coordinate coordinate = objectMapper.readValue(byteList, Coordinate.class);
-                //double latitude = Math.round(Double.parseDouble(list.get(0).replaceAll("\\[|\\]", "")) * 100000d) / 100000d;
-                //double longitude = Math.round(Double.parseDouble(list.get(1).replaceAll("\\[|\\]", "")) * 100000d) / 100000d;
-                //coordinateService.add(latitude,longitude);
+                coordinateService.add(coordinate.Latitude, coordinate.Longitude, coordinate.Timestamp);
             } catch (ArrayIndexOutOfBoundsException aie) {
                 aie.printStackTrace();
             }

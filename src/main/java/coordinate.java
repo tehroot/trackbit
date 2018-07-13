@@ -1,8 +1,8 @@
 public class Coordinate {
 
-    double Latitude;
-    double Longitude;
-    long Timestamp;
+    public double Latitude;
+    public double Longitude;
+    public long Timestamp;
 
     public Coordinate(){}
 
@@ -12,9 +12,7 @@ public class Coordinate {
         this.Timestamp = Timestamp;
     }
 
-    public void set_latitude(double Latitude){
-        this.Latitude = Latitude;
-    }
+    public void set_latitude(double Latitude){ this.Latitude = Latitude; }
 
     public double get_latitude(){
         return Latitude;
