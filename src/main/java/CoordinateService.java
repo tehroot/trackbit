@@ -10,9 +10,9 @@ public class CoordinateService {
     private static Map<Integer, coordinate> coordinateMap = new HashMap<>();
     private static final AtomicInteger count = new AtomicInteger(0);
     private static JSONArray polyArray = new JSONArray();
-    public coordinate add(double latitude, double longitude) {
+    public coordinate add(double latitude, double longitude, long timestamp) {
         int currentId = count.incrementAndGet();
-        coordinate coordinate = new coordinate(latitude, longitude);
+        coordinate coordinate = new coordinate(latitude, longitude, timestamp);
         coordinateMap.put(currentId, coordinate);
         return coordinate;
     }
@@ -36,10 +36,6 @@ public class CoordinateService {
         return "";
     }
 
-    public CoordinateService(){
-
-    }
-
     public void constructPolyLine(Map<Integer, coordinate> coordinateMap, JSONArray array){
         array.clear();
         coordinateMap.forEach((key, value) -> {
@@ -54,6 +50,10 @@ public class CoordinateService {
     public void clearPolyLineData(Map<Integer, coordinate> coordinateMap, JSONArray array){
         array.clear();
         coordinateMap.clear();
+    }
+
+    public CoordinateService(){
+
     }
 
 }
