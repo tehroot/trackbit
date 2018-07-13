@@ -4,9 +4,9 @@ import static spark.Spark.*;
 public class Main {
 
     static CoordinateService coordinateService = new CoordinateService();
-    static List<String> list;
-    static byte[] byteList;
     public static void main(String[] args) {
+        final List<String> list;
+        final byte[] byteList;
         staticFileLocation("/public");
         port(8080);
         get("/", (req, res) -> {res.redirect("index.html"); return "";});
@@ -14,7 +14,7 @@ public class Main {
             try {
                 byteList = request.bodyAsBytes();
                 ObjectMapper objectMapper = new ObjectMapper();
-                coordinate coordinate = objectMapper.readValue(byteList, coordinate.class);
+                Coordinate coordinate = objectMapper.readValue(byteList, Coordinate.class);
                 //double latitude = Math.round(Double.parseDouble(list.get(0).replaceAll("\\[|\\]", "")) * 100000d) / 100000d;
                 //double longitude = Math.round(Double.parseDouble(list.get(1).replaceAll("\\[|\\]", "")) * 100000d) / 100000d;
                 //coordinateService.add(latitude,longitude);

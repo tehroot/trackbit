@@ -1,12 +1,12 @@
-public class coordinate {
+public class Coordinate {
 
     double Latitude;
     double Longitude;
     long Timestamp;
 
-    public coordinate(){}
+    public Coordinate(){}
 
-    public coordinate(double Latitude, double Longitude, long Timestamp) {
+    public Coordinate(double Latitude, double Longitude, long Timestamp) {
         this.Latitude = Latitude;
         this.Longitude = Longitude;
         this.Timestamp = Timestamp;
