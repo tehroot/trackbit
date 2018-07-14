@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CoordinateService {
-    private static Map<Integer, coordinate> coordinateMap = new HashMap<>();
+    private static Map<Integer, Coordinate> coordinateMap = new HashMap<>();
     private static final AtomicInteger count = new AtomicInteger(0);
     private static JSONArray polyArray = new JSONArray();
-    public coordinate add(double latitude, double longitude) {
+    public Coordinate add(double latitude, double longitude, long timestamp) {
         int currentId = count.incrementAndGet();
-        coordinate coordinate = new coordinate(latitude, longitude);
+        Coordinate coordinate = new Coordinate(latitude, longitude, timestamp);
         coordinateMap.put(currentId, coordinate);
         return coordinate;
     }
@@ -36,24 +36,24 @@ public class CoordinateService {
         return "";
     }
 
-    public CoordinateService(){
-
-    }
-
-    public void constructPolyLine(Map<Integer, coordinate> coordinateMap, JSONArray array){
+    public void constructPolyLine(Map<Integer, Coordinate> coordinateMap, JSONArray array){
         array.clear();
         coordinateMap.forEach((key, value) -> {
             ArrayList<Double> temp = new ArrayList<>();
-            coordinate MapCoordinate = value;
+            Coordinate MapCoordinate = value;
             temp.add(MapCoordinate.get_latitude());
             temp.add(MapCoordinate.get_longitude());
             array.add(temp);
         });
     }
 
-    public void clearPolyLineData(Map<Integer, coordinate> coordinateMap, JSONArray array){
+    public void clearPolyLineData(Map<Integer, Coordinate> coordinateMap, JSONArray array){
         array.clear();
         coordinateMap.clear();
+    }
+
+    public CoordinateService(){
+
     }
 
 }
