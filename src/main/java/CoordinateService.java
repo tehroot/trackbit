@@ -52,6 +52,30 @@ public class CoordinateService {
         coordinateMap.clear();
     }
 
+    public void calculateDistance(Map<Integer, Coordinate> coordinateMap){
+        int remainder = coordinateMap.size() % 2;
+
+    }
+
+    public double Haversine(Coordinate coordinate1, Coordinate coordinate2){
+        //radius of the earth in meters
+        int radius = 6371000;
+        //phi = latitude, lambda = longitude
+        double Phi1 = Math.toRadians(coordinate1.get_latitude());
+        double Phi2 = Math.toRadians(coordinate2.get_latitude());
+        double DeltaPhi = Math.toRadians(coordinate2.get_latitude() - coordinate1.get_latitude());
+        double DeltaLambda = Math.toRadians(coordinate2.get_longitude() - coordinate1.get_longitude());
+        //take sin squared of both DeltaPhi and DeltaLambda
+        double x = Math.pow(Math.sin(DeltaPhi / 2), 2);
+        double y = Math.pow(Math.sin(DeltaLambda / 2), 2);
+        //solve for a using above
+        double a = x + Math.cos(Phi1) * Math.cos(Phi2) * y;
+        //take the arctangent of the sqrt of the first coordinate, and the sqrt of 1 - first coordinate
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double d = radius * c;
+        return d;
+    }
+
     public CoordinateService(){
 
     }
