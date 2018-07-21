@@ -1,4 +1,6 @@
-public class Coordinate {
+import java.io.Serializable;
+
+public class Coordinate implements Serializable{
 
     public double Latitude;
     public double Longitude;

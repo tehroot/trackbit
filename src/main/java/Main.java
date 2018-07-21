@@ -1,6 +1,7 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import static spark.Spark.*;
+
 public class Main {
 
     static CoordinateService coordinateService = new CoordinateService();
@@ -26,6 +27,8 @@ public class Main {
             response.type("application/json");
             return coordinateService.returnPolyLine();
         });
+
+        post("/distance", (request, response) -> coordinateService.returnDistance());
         post("/clear", ((request, response) -> coordinateService.clearPolyLine()));
     }
 }

@@ -1,10 +1,13 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class CoordinateService {
     private static Map<Integer, Coordinate> coordinateMap = new HashMap<>();
@@ -52,12 +55,19 @@ public class CoordinateService {
         coordinateMap.clear();
     }
 
-    public void calculateDistance(Map<Integer, Coordinate> coordinateMap){
-        int remainder = coordinateMap.size() % 2;
+    public Stream returnDistance(){
+        //TODO -- Buffout
+        return calculateDistance(coordinateMap);
+    }
 
+    public Stream calculateDistance(Map<Integer, Coordinate> coordinateMap){
+        //TODO -- Implement windowing on hashmap for haversine calculation
+        List keySet = setToList(coordinateMap);
+        return sliding(keySet, 2);
     }
 
     public double Haversine(Coordinate coordinate1, Coordinate coordinate2){
+        //TODO -- Comparison of Law of cosines in small distance accuracy discrepancies
         //radius of the earth in meters
         int radius = 6371000;
         //phi = latitude, lambda = longitude
@@ -72,8 +82,45 @@ public class CoordinateService {
         double a = x + Math.cos(Phi1) * Math.cos(Phi2) * y;
         //take the arctangent of the sqrt of the first coordinate, and the sqrt of 1 - first coordinate
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        //calculate the distance between by using the product of the radius of earth and the value of c
         double d = radius * c;
+        //return distance
         return d;
+    }
+
+    private static List setToList(Map map){
+        //entry set to list for window purposes
+        List returnList = new ArrayList();
+        returnList.addAll(map.keySet());
+        return returnList;
+    }
+
+    private static <T> Stream<List<T>> sliding(List<T> list, int size){
+        //TODO -- Revisit
+        if (size > list.size()){
+            return Stream.empty();
+        } else {
+            //returns a ranged intstream of the list(window)
+            return IntStream.range(0, list.size() - size + 1).mapToObj(start -> list.subList(start, start + size));
+        }
+    }
+
+    private static byte[] coordinateToByteStream(Coordinate coordinate) throws IOException {
+        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+        ObjectOutput objectOutput = null;
+        try {
+            objectOutput = new ObjectOutputStream(byteOutput);
+            objectOutput.writeObject(coordinate);
+            objectOutput.flush();
+            byte[] coordinateSerialized = byteOutput.toByteArray();
+            return coordinateSerialized;
+        } finally {
+            try {
+                byteOutput.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public CoordinateService(){
