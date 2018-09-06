@@ -4,19 +4,28 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.sql.Array;
+import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class CoordinateService {
+    static PsqlConnector psqlConnector = new PsqlConnector();
     private static Map<Integer, Coordinate> coordinateMap = new HashMap<>();
-    private static final AtomicInteger count = new AtomicInteger(0);
+    private static Map<Integer, HashMap> storedRoutes = new HashMap<>();
+    private static int count = 0;
     private static JSONArray polyArray = new JSONArray();
-    public Coordinate add(double latitude, double longitude, long timestamp) {
-        int currentId = count.incrementAndGet();
+    public Coordinate add(double latitude, double longitude, long timestamp, ArrayList<String> arguments) {
+        int currentId = count++;
         Coordinate coordinate = new Coordinate(latitude, longitude, timestamp);
         coordinateMap.put(currentId, coordinate);
+        try {
+            psqlConnector.insertDB(psqlConnector.initConnection(arguments), currentId, coordinateToByteArray(coordinateMap.get(currentId)), coordinateMap.get(currentId).Timestamp);
+        } catch (IOException |SQLException e){
+            e.printStackTrace();
+        }
+
         return coordinate;
     }
 
@@ -55,7 +64,7 @@ public class CoordinateService {
         coordinateMap.clear();
     }
 
-    public Stream returnDistance(){
+    protected Stream returnDistance(){
         //TODO -- Buffout
         return calculateDistance(coordinateMap);
     }
@@ -88,14 +97,14 @@ public class CoordinateService {
         return d;
     }
 
-    private static List setToList(Map map){
+    protected static List setToList(Map map){
         //entry set to list for window purposes
         List returnList = new ArrayList();
         returnList.addAll(map.keySet());
         return returnList;
     }
 
-    private static <T> Stream<List<T>> sliding(List<T> list, int size){
+    protected static <T> Stream<List<T>> sliding(List<T> list, int size){
         //TODO -- Revisit
         if (size > list.size()){
             return Stream.empty();
@@ -105,7 +114,7 @@ public class CoordinateService {
         }
     }
 
-    private static byte[] coordinateToByteStream(Coordinate coordinate) throws IOException {
+    protected static byte[] coordinateToByteArray(Coordinate coordinate) throws IOException {
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
         ObjectOutput objectOutput = null;
         try {

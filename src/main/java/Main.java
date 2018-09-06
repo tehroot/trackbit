@@ -1,21 +1,25 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.ArrayList;
 import java.util.List;
 import static spark.Spark.*;
 
 public class Main {
 
     static CoordinateService coordinateService = new CoordinateService();
-    public static void main(String[] args) {
+    static UtilityMethods utilityMethods = new UtilityMethods();
+    public static void main(String[] args) throws Exception{
         final List<String> list;
         staticFileLocation("/public");
         port(8080);
+        final ArrayList<String> arguments = UtilityMethods.commandLineArgs(args);
         get("/", (req, res) -> {res.redirect("index.html"); return "";});
         post("/coordinate", (request, response) -> {
             try {
                 byte[] byteList = request.bodyAsBytes();
                 ObjectMapper objectMapper = new ObjectMapper();
                 Coordinate coordinate = objectMapper.readValue(byteList, Coordinate.class);
-                coordinateService.add(coordinate.Latitude, coordinate.Longitude, coordinate.Timestamp);
+                coordinateService.add(coordinate.Latitude, coordinate.Longitude, coordinate.Timestamp, arguments);
             } catch (ArrayIndexOutOfBoundsException aie) {
                 aie.printStackTrace();
             }
