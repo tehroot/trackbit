@@ -7,7 +7,7 @@ public class PsqlConnector {
         String user = arguments.get(0);
         String password = arguments.get(1);
         String databaseName = arguments.get(2);
-        String url = "jdbc:postgresql://localhost/"+databaseName+'?'+user+"&"+password;
+        String url = "jdbc:postgresql://localhost/"+databaseName+"?user="+user+"&password="+password;
         Connection connection = DriverManager.getConnection(url);
         return connection;
     }
