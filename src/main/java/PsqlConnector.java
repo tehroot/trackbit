@@ -1,5 +1,6 @@
 import java.sql.*;
 import java.util.ArrayList;
+import java.sql.Timestamp;
 
 public class PsqlConnector {
 
@@ -22,10 +23,12 @@ public class PsqlConnector {
     }
 
     protected static PreparedStatement insertDB(Connection connection, int id, byte[] array, long timestamp) throws SQLException{
+        Timestamp longStamp = null;
+        longStamp.setTime(timestamp);
         PreparedStatement ps = connection.prepareStatement("INSERT INTO route VALUES (?, ?, ?)");
         ps.setInt(1, id);
         ps.setBytes(2, array);
-        ps.setLong(3, timestamp);
+        ps.setTimestamp(3,  longStamp);
         return ps;
     }
 
