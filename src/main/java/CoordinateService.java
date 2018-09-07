@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.sql.Array;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.IntStream;
@@ -21,7 +21,8 @@ public class CoordinateService {
         Coordinate coordinate = new Coordinate(latitude, longitude, timestamp);
         coordinateMap.put(currentId, coordinate);
         try {
-            psqlConnector.insertDB(psqlConnector.initConnection(arguments), currentId, coordinateToByteArray(coordinateMap.get(currentId)), coordinateMap.get(currentId).Timestamp);
+            PreparedStatement insert = psqlConnector.insertDB(psqlConnector.initConnection(arguments), currentId, coordinateToByteArray(coordinateMap.get(currentId)), coordinateMap.get(currentId).Timestamp);
+            boolean result = psqlConnector.transactDB(insert);
         } catch (IOException |SQLException e){
             e.printStackTrace();
         }
