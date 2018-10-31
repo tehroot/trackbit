@@ -16,32 +16,35 @@ public class CoordinateService {
     private static Map<Integer, HashMap> storedRoutes = new HashMap<>();
     private static int count = 0;
     private static JSONArray polyArray = new JSONArray();
-    public Coordinate add(double latitude, double longitude, long timestamp, ArrayList<String> arguments) {
+    protected Coordinate add(double latitude, double longitude, long timestamp, ArrayList<String> arguments) {
         int currentId = count++;
         Coordinate coordinate = new Coordinate(latitude, longitude, timestamp);
         coordinateMap.put(currentId, coordinate);
         try {
-            PreparedStatement insert = psqlConnector.insertDB(psqlConnector.initConnection(arguments), currentId, coordinateToByteArray(coordinateMap.get(currentId)), coordinateMap.get(currentId).Timestamp);
+            PreparedStatement insert = psqlConnector.insertDB(psqlConnector.initConnection(arguments), currentId, objectToByteArray(coordinateMap.get(currentId)), coordinateMap.get(currentId).Timestamp);
             boolean result = psqlConnector.transactDB(insert);
         } catch (IOException |SQLException e){
             e.printStackTrace();
         }
-
         return coordinate;
     }
 
-    public List findall(){
+    protected static void addFinishedRoute(HashMap coordinateMap){
+        
+    }
+
+    protected List findall(){
         return new ArrayList(coordinateMap.values());
     }
 
-    public JSONObject returnPolyLine(){
+    protected JSONObject returnPolyLine(){
         constructPolyLine(coordinateMap, polyArray);
         JSONObject obj = new JSONObject();
         obj.put("coordinates", polyArray);
         return obj;
     }
 
-    public String clearPolyLine(){
+    protected String clearPolyLine(){
         clearPolyLineData(coordinateMap, polyArray);
         if(coordinateMap.size() == 0 && polyArray.size() == 0){
             return "clear";
@@ -49,7 +52,7 @@ public class CoordinateService {
         return "";
     }
 
-    public void constructPolyLine(Map<Integer, Coordinate> coordinateMap, JSONArray array){
+    protected void constructPolyLine(Map<Integer, Coordinate> coordinateMap, JSONArray array){
         array.clear();
         coordinateMap.forEach((key, value) -> {
             ArrayList<Double> temp = new ArrayList<>();
@@ -60,7 +63,7 @@ public class CoordinateService {
         });
     }
 
-    public void clearPolyLineData(Map<Integer, Coordinate> coordinateMap, JSONArray array){
+    protected void clearPolyLineData(Map<Integer, Coordinate> coordinateMap, JSONArray array){
         array.clear();
         coordinateMap.clear();
     }
@@ -70,7 +73,7 @@ public class CoordinateService {
         return calculateDistance(coordinateMap);
     }
 
-    public Stream calculateDistance(Map<Integer, Coordinate> coordinateMap){
+    protected Stream calculateDistance(Map<Integer, Coordinate> coordinateMap){
         //TODO -- Implement windowing on hashmap for haversine calculation
         List keySet = setToList(coordinateMap);
         return sliding(keySet, 2);
@@ -115,12 +118,12 @@ public class CoordinateService {
         }
     }
 
-    protected static byte[] coordinateToByteArray(Coordinate coordinate) throws IOException {
+    protected static byte[] objectToByteArray(Object object) throws IOException {
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
         ObjectOutput objectOutput = null;
         try {
             objectOutput = new ObjectOutputStream(byteOutput);
-            objectOutput.writeObject(coordinate);
+            objectOutput.writeObject(object);
             objectOutput.flush();
             byte[] coordinateSerialized = byteOutput.toByteArray();
             return coordinateSerialized;

@@ -23,13 +23,16 @@ public class PsqlConnector {
     }
 
     protected static PreparedStatement insertDB(Connection connection, int id, byte[] array, long timestamp) throws SQLException{
-        Timestamp longStamp = null;
-        longStamp.setTime(timestamp);
+        Timestamp stamp = new Timestamp(timestamp);
         PreparedStatement ps = connection.prepareStatement("INSERT INTO route VALUES (?, ?, ?)");
         ps.setInt(1, id);
         ps.setBytes(2, array);
-        ps.setTimestamp(3,  longStamp);
+        ps.setTimestamp(3,  stamp);
         return ps;
+    }
+
+    protected static PreparedStatement getDB(Connection connection, int id) throws SQLException{
+
     }
 
     protected static PreparedStatement deleteDB(Connection connection, int id) throws SQLException{

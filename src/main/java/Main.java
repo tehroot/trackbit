@@ -12,6 +12,7 @@ public class Main {
         final List<String> list;
         staticFileLocation("/public");
         port(8080);
+
         final ArrayList<String> arguments = UtilityMethods.commandLineArgs(args);
         get("/", (req, res) -> {res.redirect("index.html"); return "";});
         post("/coordinate", (request, response) -> {
@@ -25,14 +26,30 @@ public class Main {
             }
             return "";
         });
-        get("/coordinate",(request, response) -> {
+        get("/polyline",(request, response) -> {
             response.header("Access-Control-Allow-Origin", "*");
             response.header("Access-Control-Allow-Methods", "GET");
             response.type("application/json");
             return coordinateService.returnPolyLine();
         });
+        get("/coordinates", (request, response) -> {
+           response.header("Access-Control-Allow-Origin", "*");
+           response.header("Access-Control-Allow-Methods", "GET");
+           response.type("application/json");
+           //TODO - return list of coordinates from postgres
+        });
+        post("/finished", (request, response) -> {
+            //TODO - post finished call to server in order to finish transacting a bytearray and performing any remaining things left(Transacting//examples)
+           try {
+               byte[] byteList = request.bodyAsBytes();
+               ObjectMapper objectMapper = new ObjectMapper();
 
-        post("/distance", (request, response) -> coordinateService.returnDistance());
+           } catch (){
+
+           }
+        });
+
+        get("/distance", (request, response) -> coordinateService.returnDistance());
         post("/clear", ((request, response) -> coordinateService.clearPolyLine()));
     }
 }
