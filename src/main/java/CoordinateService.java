@@ -16,20 +16,24 @@ public class CoordinateService {
     private static Map<Integer, HashMap> storedRoutes = new HashMap<>();
     private static int count = 0;
     private static JSONArray polyArray = new JSONArray();
-    protected Coordinate add(double latitude, double longitude, long timestamp, ArrayList<String> arguments) {
+    protected void add(double latitude, double longitude, long timestamp, ArrayList<String> arguments) {
         int currentId = count++;
         Coordinate coordinate = new Coordinate(latitude, longitude, timestamp);
         coordinateMap.put(currentId, coordinate);
         try {
             PreparedStatement insert = psqlConnector.insertDB(psqlConnector.initConnection(arguments), currentId, objectToByteArray(coordinateMap.get(currentId)), coordinateMap.get(currentId).Timestamp);
             boolean result = psqlConnector.transactDB(insert);
-        } catch (IOException |SQLException e){
+            if(result != true){
+                throw new SQLException("Unknown SQL exception, likely an error writing values, look at DB.");
+            } else {
+                throw new SQLException("Unknown SQL exception, no known issue, check DB.");
+            }
+        } catch (IOException | SQLException e){
             e.printStackTrace();
         }
-        return coordinate;
     }
 
-    protected static void addFinishedRoute(HashMap coordinateMap){
+    protected static void createnewRoute(HashMap coordinateMap, HashMap storedRoutes){
         
     }
 

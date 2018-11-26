@@ -30,10 +30,11 @@ public class PsqlConnector {
         ps.setTimestamp(3,  stamp);
         return ps;
     }
-
+    /*
     protected static PreparedStatement getDB(Connection connection, int id) throws SQLException{
 
     }
+    */
 
     protected static PreparedStatement deleteDB(Connection connection, int id) throws SQLException{
         PreparedStatement ps = connection.prepareStatement("");
