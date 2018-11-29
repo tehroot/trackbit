@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
@@ -13,7 +15,7 @@ import java.util.stream.Stream;
 public class CoordinateService {
     static PsqlConnector psqlConnector = new PsqlConnector();
     private static Map<Integer, Coordinate> coordinateMap = new HashMap<>();
-    private static Map<Integer, HashMap> storedRoutes = new HashMap<>();
+    private static Map<String, HashMap> storedRoutes = new HashMap<>();
     private static int count = 0;
     private static JSONArray polyArray = new JSONArray();
     protected void add(double latitude, double longitude, long timestamp, ArrayList<String> arguments) {
@@ -33,8 +35,14 @@ public class CoordinateService {
         }
     }
 
-    protected static void createnewRoute(HashMap coordinateMap, HashMap storedRoutes){
-        
+    protected void createNewRoute(Map coordinateMap, Map storedRoutes) throws IOException{
+        storedRoutes.put(shaHash(objectToByteArray(coordinateMap)), coordinateMap);
+        coordinateMap.clear();
+    }
+
+    protected String finishRoute() throws IOException{
+        createNewRoute(coordinateMap, storedRoutes);
+        return "";
     }
 
     protected List findall(){
@@ -54,6 +62,25 @@ public class CoordinateService {
             return "clear";
         }
         return "";
+    }
+
+    protected String shaHash(byte[] array) {
+        String digest = "";
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            digest =  byteArrayToHex(md.digest(array));
+        } catch (NoSuchAlgorithmException e){
+            e.printStackTrace();
+        }
+        return digest;
+    }
+
+    protected String byteArrayToHex(byte[] array) throws ArrayIndexOutOfBoundsException{
+        Formatter formatter = new Formatter();
+        for (byte b : array){
+            formatter.format("%02X", b);
+        }
+        return formatter.toString();
     }
 
     protected void constructPolyLine(Map<Integer, Coordinate> coordinateMap, JSONArray array){
@@ -83,6 +110,8 @@ public class CoordinateService {
         return sliding(keySet, 2);
     }
 
+
+
     public double Haversine(Coordinate coordinate1, Coordinate coordinate2){
         //TODO -- Comparison of Law of cosines in small distance accuracy discrepancies
         //radius of the earth in meters
@@ -105,14 +134,14 @@ public class CoordinateService {
         return d;
     }
 
-    protected static List setToList(Map map){
+    protected List setToList(Map map){
         //entry set to list for window purposes
         List returnList = new ArrayList();
         returnList.addAll(map.keySet());
         return returnList;
     }
 
-    protected static <T> Stream<List<T>> sliding(List<T> list, int size){
+    protected <T> Stream<List<T>> sliding(List<T> list, int size){
         //TODO -- Revisit
         if (size > list.size()){
             return Stream.empty();
@@ -122,7 +151,7 @@ public class CoordinateService {
         }
     }
 
-    protected static byte[] objectToByteArray(Object object) throws IOException {
+    protected byte[] objectToByteArray(Object object) throws IOException {
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
         ObjectOutput objectOutput = null;
         try {

@@ -43,20 +43,9 @@ public class Main {
            //TODO - return list of coordinates from postgres
         });
         */
-        /*
-        post("/finished", (request, response) -> {
-            //TODO - post finished call to server in order to finish transacting a bytearray and performing any remaining things left(Transacting//examples)
-           try {
-               byte[] byteList = request.bodyAsBytes();
-               ObjectMapper objectMapper = new ObjectMapper();
 
-           } catch (){
-
-           }
-        });
-        */
-
+        post("/finished", (request, response) -> coordinateService.finishRoute());
         get("/distance", (request, response) -> coordinateService.returnDistance());
-        post("/clear", ((request, response) -> coordinateService.clearPolyLine()));
+        post("/clear", (request, response) -> coordinateService.clearPolyLine());
     }
 }
