@@ -44,6 +44,7 @@ public class Main {
         });
         */
 
+        get("/routes", (request, response) -> coordinateService.allRoutes());
         post("/finished", (request, response) -> coordinateService.finishRoute());
         get("/distance", (request, response) -> coordinateService.returnDistance());
         post("/clear", (request, response) -> coordinateService.clearPolyLine());

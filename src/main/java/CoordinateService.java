@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import java.io.ByteArrayOutputStream;
@@ -18,6 +19,8 @@ public class CoordinateService {
     private static Map<String, HashMap> storedRoutes = new HashMap<>();
     private static int count = 0;
     private static JSONArray polyArray = new JSONArray();
+    private static JSONArray statsArray = new JSONArray();
+
     protected void add(double latitude, double longitude, long timestamp, ArrayList<String> arguments) {
         int currentId = count++;
         Coordinate coordinate = new Coordinate(latitude, longitude, timestamp);
@@ -28,7 +31,7 @@ public class CoordinateService {
             if(result != true){
                 throw new SQLException("Unknown SQL exception, likely an error writing values, look at DB.");
             } else {
-                throw new SQLException("Unknown SQL exception, no known issue, check DB.");
+                System.out.println("Successful DB Write");
             }
         } catch (IOException | SQLException e){
             e.printStackTrace();
@@ -39,6 +42,26 @@ public class CoordinateService {
         storedRoutes.put(shaHash(objectToByteArray(coordinateMap)), coordinateMap);
         coordinateMap.clear();
     }
+
+    protected String getAllRoutes(Map<String, HashMap> storedRoutes){
+        String json = "";
+        //statsArray.clear();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+           json =  mapper.writeValueAsString(storedRoutes);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    protected String allRoutes() throws Exception{
+        String json = getAllRoutes(storedRoutes);
+        return json;
+    }
+
+
+
 
     protected String finishRoute() throws IOException{
         createNewRoute(coordinateMap, storedRoutes);
