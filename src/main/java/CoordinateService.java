@@ -1,10 +1,8 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
+
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
@@ -15,12 +13,11 @@ import java.util.stream.Stream;
 
 public class CoordinateService {
     static PsqlConnector psqlConnector = new PsqlConnector();
-    private static Map<Integer, Coordinate> coordinateMap = new HashMap<>();
-    private static Map<String, HashMap> storedRoutes = new HashMap<>();
+    private static HashMap<Integer, Coordinate> coordinateMap = new HashMap<>();
+    private static HashMap<String, HashMap> storedRoutes = new HashMap<>();
     private static int count = 0;
     private static JSONArray polyArray = new JSONArray();
     private static JSONArray statsArray = new JSONArray();
-
     protected void add(double latitude, double longitude, long timestamp, ArrayList<String> arguments) {
         int currentId = count++;
         Coordinate coordinate = new Coordinate(latitude, longitude, timestamp);
@@ -38,30 +35,28 @@ public class CoordinateService {
         }
     }
 
-    protected void createNewRoute(Map coordinateMap, Map storedRoutes) throws IOException{
-        storedRoutes.put(shaHash(objectToByteArray(coordinateMap)), coordinateMap);
+    protected void createNewRoute(HashMap coordinate, HashMap storedRoutes) throws IOException{
+        Map newMap = (HashMap) coordinate.clone();
+        storedRoutes.put(shaHash(objectToByteArray(coordinate)), newMap);
         coordinateMap.clear();
     }
 
-    protected String getAllRoutes(Map<String, HashMap> storedRoutes){
-        String json = "";
-        //statsArray.clear();
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-           json =  mapper.writeValueAsString(storedRoutes);
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-        return json;
+    protected JSONObject getAllRoutes(Map<String, HashMap> storedRoutes){
+        JSONObject obj = new JSONObject();
+        storedRoutes.forEach((key, value) -> {
+            HashMap<Integer, Coordinate> map = value;
+            map.forEach((key1, value1) -> {
+                Coordinate coordinate = value1;
+                obj.put(key, coordinate.Timestamp);
+            });
+        });
+        return obj;
     }
 
-    protected String allRoutes() throws Exception{
-        String json = getAllRoutes(storedRoutes);
-        return json;
+    protected JSONObject allRoutes(){
+        JSONObject routes = getAllRoutes(storedRoutes);
+        return routes;
     }
-
-
-
 
     protected String finishRoute() throws IOException{
         createNewRoute(coordinateMap, storedRoutes);
@@ -133,8 +128,6 @@ public class CoordinateService {
         return sliding(keySet, 2);
     }
 
-
-
     public double Haversine(Coordinate coordinate1, Coordinate coordinate2){
         //TODO -- Comparison of Law of cosines in small distance accuracy discrepancies
         //radius of the earth in meters
@@ -189,6 +182,16 @@ public class CoordinateService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    protected Object byteArrayToObjet(byte[] array) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream byteInput = new ByteArrayInputStream(array);
+        try {
+            ObjectInputStream in = new ObjectInputStream(byteInput);
+            return in.readObject();
+        } finally {
+            byteInput.close();
         }
     }
 
