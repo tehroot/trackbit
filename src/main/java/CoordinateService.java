@@ -1,12 +1,11 @@
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -18,10 +17,11 @@ public class CoordinateService {
     private static int count = 0;
     private static JSONArray polyArray = new JSONArray();
     private static JSONArray statsArray = new JSONArray();
-    protected void add(double latitude, double longitude, long timestamp, ArrayList<String> arguments) {
+    protected void add(double latitude, double longitude, long timestamp) {
         int currentId = count++;
         Coordinate coordinate = new Coordinate(latitude, longitude, timestamp);
         coordinateMap.put(currentId, coordinate);
+        /*
         try {
             PreparedStatement insert = psqlConnector.insertDB(psqlConnector.initConnection(arguments), currentId, objectToByteArray(coordinateMap.get(currentId)), coordinateMap.get(currentId).Timestamp);
             boolean result = psqlConnector.transactDB(insert);
@@ -33,12 +33,15 @@ public class CoordinateService {
         } catch (IOException | SQLException e){
             e.printStackTrace();
         }
+        */
     }
 
-    protected void createNewRoute(HashMap coordinate, HashMap storedRoutes) throws IOException{
+    protected String createNewRoute(HashMap coordinate, HashMap storedRoutes) throws IOException{
+        String hash = shaHash(objectToByteArray(coordinate));
         Map newMap = (HashMap) coordinate.clone();
-        storedRoutes.put(shaHash(objectToByteArray(coordinate)), newMap);
+        storedRoutes.put(hash, newMap);
         coordinateMap.clear();
+        return hash;
     }
 
     protected JSONObject getAllRoutes(Map<String, HashMap> storedRoutes){
@@ -58,8 +61,21 @@ public class CoordinateService {
         return routes;
     }
 
-    protected String finishRoute() throws IOException{
-        createNewRoute(coordinateMap, storedRoutes);
+
+    protected String finishRoute(ArrayList<String> arguments) throws IOException{
+        long now = Instant.now().toEpochMilli();
+        String hash = createNewRoute(coordinateMap, storedRoutes);
+        try {
+            PreparedStatement insert = psqlConnector.insertDB(psqlConnector.initConnection(arguments), hash, objectToByteArray(coordinateMap), now);
+            boolean result = psqlConnector.transactDB(insert);
+            if(result != true){
+                throw new SQLException("Unknown SQL exception, likely an error writing values, look at DB.");
+            } else {
+                System.out.println("Successful DB Write");
+            }
+        } catch (IOException | SQLException e){
+            e.printStackTrace();
+        }
         return "";
     }
 

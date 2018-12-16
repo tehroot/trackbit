@@ -23,7 +23,7 @@ public class Main {
                 byte[] byteList = request.bodyAsBytes();
                 ObjectMapper objectMapper = new ObjectMapper();
                 Coordinate coordinate = objectMapper.readValue(byteList, Coordinate.class);
-                coordinateService.add(coordinate.Latitude, coordinate.Longitude, coordinate.Timestamp, arguments);
+                coordinateService.add(coordinate.Latitude, coordinate.Longitude, coordinate.Timestamp);
             } catch (ArrayIndexOutOfBoundsException aie) {
                 aie.printStackTrace();
             }
@@ -45,7 +45,7 @@ public class Main {
         */
 
         get("/routes", (request, response) -> coordinateService.allRoutes());
-        post("/finished", (request, response) -> coordinateService.finishRoute());
+        post("/finished", (request, response) -> coordinateService.finishRoute(arguments));
         get("/distance", (request, response) -> coordinateService.returnDistance());
         post("/clear", (request, response) -> coordinateService.clearPolyLine());
     }

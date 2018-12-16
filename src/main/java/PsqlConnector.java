@@ -22,10 +22,10 @@ public class PsqlConnector {
         }
     }
 
-    protected static PreparedStatement insertDB(Connection connection, int id, byte[] array, long timestamp) throws SQLException{
+    protected static PreparedStatement insertDB(Connection connection, String id, byte[] array, long timestamp) throws SQLException{
         Timestamp stamp = new Timestamp(timestamp);
         PreparedStatement ps = connection.prepareStatement("INSERT INTO route VALUES (?, ?, ?)");
-        ps.setInt(1, id);
+        ps.setString(1, id);
         ps.setBytes(2, array);
         ps.setTimestamp(3,  stamp);
         return ps;
