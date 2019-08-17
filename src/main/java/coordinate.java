@@ -1,14 +1,14 @@
-import java.io.Serializable;
+public class Coordinate{
 
-public class Coordinate implements Serializable{
-
+    public String path_route_id;
     public double Latitude;
     public double Longitude;
     public long Timestamp;
 
     public Coordinate(){}
 
-    public Coordinate(double Latitude, double Longitude, long Timestamp) {
+    public Coordinate(String path_route_id, double Latitude, double Longitude, long Timestamp) {
+        this.path_route_id = path_route_id;
         this.Latitude = Latitude;
         this.Longitude = Longitude;
         this.Timestamp = Timestamp;

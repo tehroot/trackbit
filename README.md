@@ -5,5 +5,5 @@ Basic implementation for processing geolocation data sent from a FITBIT device w
 - Finish Postgres backend implementation
 - Finish some deserialization nonsense -- Cleanup
 - Haversine implemented, add LoC(law of cosines) for fun to track small distance accuracy discrepancies(if any)
-- Saner route implementation
+- Saner Route implementation
 - HMAC for endpoints

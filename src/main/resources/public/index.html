@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <link rel='stylesheet' href='site-sheet.css'/>
+  <script src="scripts.js"></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Trackbit - Open_source fitbit mapping</title>
@@ -14,6 +16,11 @@
     #map{ width: 800px; height: 600px; }
   </style>
 </head>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      
+    });
+  </script>
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -49,36 +56,5 @@
       </table>
     </div>
   </div>
-  <script type="text/javascript">
-    $(document).ready(function(){
-
-    });
-  </script>
-    <script>
-        //url location
-        var coordinateURL = "http://localhost:8080/polyline"
-        var latlngs = new Array();
-        $.ajax({
-            url: coordinateURL,
-            async: false,
-            dataType: 'json',
-            success: function(data){
-                latlngs.push(data.coordinates);
-            }
-        });
-        // initialize the map at base coordinates in array
-        var map = L.map('map').setView(latlngs[0][0], 13);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        console.log(latlngs.length);
-        // iterate through coordinates list of nested double arrays
-        for(var i = 0; i < latlngs.length; i++){
-            var latlng = latlngs[i];
-            var polyline = L.polyline(latlng, {color: 'red'}).addTo(map);
-        }
-        // raster tile layer from openstreetmap{x}{y} params are location data passed from initial map load
-        //var polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
-        //map.fitBounds(polyline.getBounds());
-        // load a tile layer
-    </script>
 </body>
 </html>

@@ -1,8 +1,6 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import java.io.*;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -16,34 +14,22 @@ public class CoordinateService {
     private static HashMap<String, HashMap> storedRoutes = new HashMap<>();
     private static int count = 0;
     private static JSONArray polyArray = new JSONArray();
-    private static JSONArray statsArray = new JSONArray();
-    protected void add(double latitude, double longitude, long timestamp) {
+
+    protected void add(String id, String path_route_id, double latitude, double longitude, long timestamp) {
         int currentId = count++;
-        Coordinate coordinate = new Coordinate(latitude, longitude, timestamp);
+        Coordinate coordinate = new Coordinate(path_route_id, latitude, longitude, timestamp);
         coordinateMap.put(currentId, coordinate);
-        /*
-        try {
-            PreparedStatement insert = psqlConnector.insertDB(psqlConnector.initConnection(arguments), currentId, objectToByteArray(coordinateMap.get(currentId)), coordinateMap.get(currentId).Timestamp);
-            boolean result = psqlConnector.transactDB(insert);
-            if(result != true){
-                throw new SQLException("Unknown SQL exception, likely an error writing values, look at DB.");
-            } else {
-                System.out.println("Successful DB Write");
-            }
-        } catch (IOException | SQLException e){
-            e.printStackTrace();
-        }
-        */
     }
 
-    protected String createNewRoute(HashMap coordinate, HashMap storedRoutes) throws IOException{
-        String hash = shaHash(objectToByteArray(coordinate));
-        Map newMap = (HashMap) coordinate.clone();
-        storedRoutes.put(hash, newMap);
-        coordinateMap.clear();
-        return hash;
+    //TODO -- SQL DESIGN FOR CREATING A NEW ROUTE USING PSQLCONNECTOR
+    protected String createNewRoute() throws IOException{
+        //GENERATE UUID
+        //PASSBACK UUID TO WATCH FOR USAGE
+        //WHEN POSTING COORDINATES
+        return "";
     }
 
+    //TODO --
     protected JSONObject getAllRoutes(Map<String, HashMap> storedRoutes){
         JSONObject obj = new JSONObject();
         storedRoutes.forEach((key, value) -> {
@@ -56,31 +42,14 @@ public class CoordinateService {
         return obj;
     }
 
-    protected JSONObject allRoutes(){
-        JSONObject routes = getAllRoutes(storedRoutes);
-        return routes;
-    }
-
-
     protected String finishRoute(ArrayList<String> arguments) throws IOException{
         long now = Instant.now().toEpochMilli();
-        String hash = createNewRoute(coordinateMap, storedRoutes);
-        try {
-            PreparedStatement insert = psqlConnector.insertDB(psqlConnector.initConnection(arguments), hash, objectToByteArray(coordinateMap), now);
-            boolean result = psqlConnector.transactDB(insert);
-            if(result != true){
-                throw new SQLException("Unknown SQL exception, likely an error writing values, look at DB.");
-            } else {
-                System.out.println("Successful DB Write");
-            }
-        } catch (IOException | SQLException e){
-            e.printStackTrace();
-        }
+        //not sure what I remember that this is supposed to do exactly?
+        //String hash = createNewRoute(coordinateMap, storedRoutes);
+            //TODO - NOTED HERE FOR SQL CHANGES(TRANSACTION)
+            //TODO - CONSTRUCT SQL COMMAND TO TRANSACT BOTH ROUTES AND ROUTE AREAS
+            //TODO - PARAMETERIZE WITH USERNAME STUFF CORRELATES WITH USER ID
         return "";
-    }
-
-    protected List findall(){
-        return new ArrayList(coordinateMap.values());
     }
 
     protected JSONObject returnPolyLine(){
@@ -96,17 +65,6 @@ public class CoordinateService {
             return "clear";
         }
         return "";
-    }
-
-    protected String shaHash(byte[] array) {
-        String digest = "";
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            digest =  byteArrayToHex(md.digest(array));
-        } catch (NoSuchAlgorithmException e){
-            e.printStackTrace();
-        }
-        return digest;
     }
 
     protected String byteArrayToHex(byte[] array) throws ArrayIndexOutOfBoundsException{
@@ -180,34 +138,6 @@ public class CoordinateService {
         } else {
             //returns a ranged intstream of the list(window)
             return IntStream.range(0, list.size() - size + 1).mapToObj(start -> list.subList(start, start + size));
-        }
-    }
-
-    protected byte[] objectToByteArray(Object object) throws IOException {
-        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-        ObjectOutput objectOutput = null;
-        try {
-            objectOutput = new ObjectOutputStream(byteOutput);
-            objectOutput.writeObject(object);
-            objectOutput.flush();
-            byte[] coordinateSerialized = byteOutput.toByteArray();
-            return coordinateSerialized;
-        } finally {
-            try {
-                byteOutput.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    protected Object byteArrayToObjet(byte[] array) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream byteInput = new ByteArrayInputStream(array);
-        try {
-            ObjectInputStream in = new ObjectInputStream(byteInput);
-            return in.readObject();
-        } finally {
-            byteInput.close();
         }
     }
 

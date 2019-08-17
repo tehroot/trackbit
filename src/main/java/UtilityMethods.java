@@ -1,5 +1,15 @@
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.cli.*;
-
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.util.ArrayList;
 
 public class UtilityMethods {
@@ -38,6 +48,45 @@ public class UtilityMethods {
             formatter.printHelp("ARGUMENT", options);
             System.exit(1);
         }
+        return null;
+    }
+
+    public JsonNode settingsRead(){
+        try{
+            File file = new File(this.getClass().getResource("/settings.json").getFile());
+            FileReader reader = new FileReader(file.getAbsoluteFile());
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(reader);
+            return node;
+        } catch(IOException e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static ArrayList<byte[]> PBKDF2(String password){
+        ArrayList<byte[]> result = new ArrayList<>();
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[32];
+        result.add(salt);
+        random.nextBytes(salt);
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 100000, 256);
+        try{
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
+            byte[] hash = factory.generateSecret(spec).getEncoded();
+            result.add(hash);
+            return result;
+        } catch (NoSuchAlgorithmException |InvalidKeySpecException e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Boolean validatePBKDF2(String password, byte[] salt){
+
+
+
+
         return null;
     }
 }
