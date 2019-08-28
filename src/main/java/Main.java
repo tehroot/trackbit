@@ -1,6 +1,5 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
 import java.util.List;
 import static spark.Spark.*;
 
@@ -48,8 +47,9 @@ public class Main {
         });
 
         get("/login", (req, res) -> {
-            res.type("application/json");4
+            res.type("application/json");
             res.redirect("login.html");
+            return "";
         });
 
         post("/register", (req, res) -> {
