@@ -1,8 +1,6 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import java.io.*;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.IntStream;
@@ -10,10 +8,10 @@ import java.util.stream.Stream;
 
 public class CoordinateService {
     static PsqlConnector psqlConnector = new PsqlConnector();
-    private static HashMap<Integer, Coordinate> coordinateMap = new HashMap<>();
-    private static HashMap<String, HashMap> storedRoutes = new HashMap<>();
-    private static int count = 0;
-    private static JSONArray polyArray = new JSONArray();
+    private HashMap<Integer, Coordinate> coordinateMap = new HashMap<>();
+    private HashMap<String, HashMap> storedRoutes = new HashMap<>();
+    private int count = 0;
+    private JSONArray polyArray = new JSONArray();
 
     protected void add(String id, String path_route_id, double latitude, double longitude, long timestamp) {
         int currentId = count++;

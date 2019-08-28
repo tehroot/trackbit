@@ -8,8 +8,8 @@ public class Main {
     static CoordinateService coordinateService = new CoordinateService();
     static LoginService loginService = new LoginService();
     //insert file reading to parse config
-    static UtilityMethods utilityMethods = new UtilityMethods();
-    public static void main(String[] args) throws Exception{
+    //static UtilityMethods utilityMethods = new UtilityMethods();
+    public static void main(String[] args) {
         final List<String> list;
         staticFileLocation("/public");
         port(6555);
@@ -57,9 +57,10 @@ public class Main {
             response.type("application/json");
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode postNode = objectMapper.readTree(request.bodyAsBytes());
-            if(loginService.createUser(postNode) == true){
+            if(loginService.createUser(postNode)){
                 response.redirect("index.html");
             } else {
+                //stubbed to null for now?
                 return null;
             }
             return "";

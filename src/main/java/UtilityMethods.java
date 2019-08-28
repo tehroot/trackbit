@@ -51,9 +51,9 @@ public class UtilityMethods {
         return null;
     }
 
-    public JsonNode settingsRead(){
+    public static JsonNode settingsRead(){
         try{
-            File file = new File(this.getClass().getResource("/settings.json").getFile());
+            File file = new File(UtilityMethods.class.getResource("/settings.json").getFile());
             FileReader reader = new FileReader(file.getAbsoluteFile());
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(reader);
@@ -64,29 +64,34 @@ public class UtilityMethods {
         }
     }
 
-    public static ArrayList<byte[]> PBKDF2(String password){
-        ArrayList<byte[]> result = new ArrayList<>();
+    public static byte[] generateSalt(){
         SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[32];
-        result.add(salt);
+        byte[] salt = new byte[64];
         random.nextBytes(salt);
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 100000, 256);
+        return salt;
+    }
+
+    public static ArrayList<byte[]> PBKDF2(String password, byte[] salt){
+        ArrayList<byte[]> result = new ArrayList<>();
+        result.add(salt);
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 100000, 512);
         try{
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
             byte[] hash = factory.generateSecret(spec).getEncoded();
             result.add(hash);
             return result;
-        } catch (NoSuchAlgorithmException |InvalidKeySpecException e){
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e){
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    public static Boolean validatePBKDF2(String password, byte[] salt){
-
-
-
-
-        return null;
+    public static Boolean validatePBKDF2(String password, byte[] storedSalt, byte[] storedHash){
+        ArrayList<byte[]> list = PBKDF2(password, storedSalt);
+        if(list.get(0) == storedHash) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -1,15 +1,12 @@
 import com.fasterxml.jackson.databind.JsonNode;
-
 import java.sql.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Optional;
 
 public class PsqlConnector {
-    static UtilityMethods utilityMethods = new UtilityMethods();
 
-    public static Connection initConnection() throws SQLException {
-        JsonNode params = utilityMethods.settingsRead();
+    public Connection initConnection() throws SQLException {
+        JsonNode params = UtilityMethods.settingsRead();
         String user = params.get("user").asText();
         String password = params.get("password").asText();
         String databaseName = params.get("database").asText();
@@ -32,19 +29,22 @@ public class PsqlConnector {
     }
 
     public  Boolean writeUserToDb(ArrayList<byte[]> hashes, String email){
-
         //insert checking for DB consistency, no duplicate emails, if duplicate detected
         //raise error above to raise to main to throw an error out to JS frontend...
-        try{
-            String writeUser = "INSERT INTO user_accounts (email, password_salt, password_hash) VALUES (?, ?, ?)";
-            PreparedStatement userInsert = initConnection().prepareStatement(writeUser);
-            userInsert.setString(1, email);
-            userInsert.setBytes(2, hashes.get(0));
-            userInsert.setBytes(3, hashes.get(1));
-            return transactDB(userInsert);
-        } catch (SQLException e){
-            e.printStackTrace();
-            throw new RuntimeException(e);
+        if (returnUserFromDb(email) == null){
+            try{
+                String writeUser = "INSERT INTO user_accounts (email, password_salt, password_hash) VALUES (?, ?, ?)";
+                PreparedStatement userInsert = initConnection().prepareStatement(writeUser);
+                userInsert.setString(1, email);
+                userInsert.setBytes(2, hashes.get(0));
+                userInsert.setBytes(3, hashes.get(1));
+                return transactDB(userInsert);
+            } catch (SQLException e){
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        } else {
+            return false;
         }
     }
 
@@ -55,11 +55,17 @@ public class PsqlConnector {
             userSelect.setString(1, email);
             ResultSet rs = returnDB(userSelect);
             if(rs == null){
+                //TODO
                 //stubbed here, need to figure out what to do if the resultset doesn't contain anything, return null?
                 //if null, what to do above? null isn't a cure-all unfortunately
+                return null;
             } else {
+                //returns selected user from db, should only return 1 result, else handles...
                 ArrayList list = new ArrayList();
-
+                list.add(rs.getString(1));
+                list.add(rs.getBytes(2));
+                list.add(rs.getBytes(3));
+                return list;
             }
         } catch (SQLException e){
             e.printStackTrace();

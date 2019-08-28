@@ -31,9 +31,7 @@ $.fn.login = function(){
         event.preventDefault();
         var fields = $(this).serializeArray();
         if(fields.length == 2){
-
-        }
-        $.ajax({
+            $.ajax({
                 type: "post",
                 url:"https://markcardish.net:6555/register"
                 contentType: "application/json",
@@ -47,6 +45,7 @@ $.fn.login = function(){
             }
             });
         this.reset();
+        }
     });
 }
 </script>
