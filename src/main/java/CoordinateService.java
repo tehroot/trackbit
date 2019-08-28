@@ -1,47 +1,63 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.io.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class CoordinateService {
     static PsqlConnector psqlConnector = new PsqlConnector();
-    private static Map<Integer, Coordinate> coordinateMap = new HashMap<>();
-    private static Map<Integer, HashMap> storedRoutes = new HashMap<>();
-    private static int count = 0;
-    private static JSONArray polyArray = new JSONArray();
-    public Coordinate add(double latitude, double longitude, long timestamp, ArrayList<String> arguments) {
+    private HashMap<Integer, Coordinate> coordinateMap = new HashMap<>();
+    private HashMap<String, HashMap> storedRoutes = new HashMap<>();
+    private int count = 0;
+    private JSONArray polyArray = new JSONArray();
+
+    protected void add(String id, String path_route_id, double latitude, double longitude, long timestamp) {
         int currentId = count++;
-        Coordinate coordinate = new Coordinate(latitude, longitude, timestamp);
+        Coordinate coordinate = new Coordinate(path_route_id, latitude, longitude, timestamp);
         coordinateMap.put(currentId, coordinate);
-        try {
-            PreparedStatement insert = psqlConnector.insertDB(psqlConnector.initConnection(arguments), currentId, coordinateToByteArray(coordinateMap.get(currentId)), coordinateMap.get(currentId).Timestamp);
-            boolean result = psqlConnector.transactDB(insert);
-        } catch (IOException |SQLException e){
-            e.printStackTrace();
-        }
-
-        return coordinate;
     }
 
-    public List findall(){
-        return new ArrayList(coordinateMap.values());
+    //TODO -- SQL DESIGN FOR CREATING A NEW ROUTE USING PSQLCONNECTOR
+    protected String createNewRoute() throws IOException{
+        //GENERATE UUID
+        //PASSBACK UUID TO WATCH FOR USAGE
+        //WHEN POSTING COORDINATES
+        return "";
     }
 
-    public JSONObject returnPolyLine(){
+    //TODO --
+    protected JSONObject getAllRoutes(Map<String, HashMap> storedRoutes){
+        JSONObject obj = new JSONObject();
+        storedRoutes.forEach((key, value) -> {
+            HashMap<Integer, Coordinate> map = value;
+            map.forEach((key1, value1) -> {
+                Coordinate coordinate = value1;
+                obj.put(key, coordinate.Timestamp);
+            });
+        });
+        return obj;
+    }
+
+    protected String finishRoute(ArrayList<String> arguments) throws IOException{
+        long now = Instant.now().toEpochMilli();
+        //not sure what I remember that this is supposed to do exactly?
+        //String hash = createNewRoute(coordinateMap, storedRoutes);
+            //TODO - NOTED HERE FOR SQL CHANGES(TRANSACTION)
+            //TODO - CONSTRUCT SQL COMMAND TO TRANSACT BOTH ROUTES AND ROUTE AREAS
+            //TODO - PARAMETERIZE WITH USERNAME STUFF CORRELATES WITH USER ID
+        return "";
+    }
+
+    protected JSONObject returnPolyLine(){
         constructPolyLine(coordinateMap, polyArray);
         JSONObject obj = new JSONObject();
         obj.put("coordinates", polyArray);
         return obj;
     }
 
-    public String clearPolyLine(){
+    protected String clearPolyLine(){
         clearPolyLineData(coordinateMap, polyArray);
         if(coordinateMap.size() == 0 && polyArray.size() == 0){
             return "clear";
@@ -49,7 +65,15 @@ public class CoordinateService {
         return "";
     }
 
-    public void constructPolyLine(Map<Integer, Coordinate> coordinateMap, JSONArray array){
+    protected String byteArrayToHex(byte[] array) throws ArrayIndexOutOfBoundsException{
+        Formatter formatter = new Formatter();
+        for (byte b : array){
+            formatter.format("%02X", b);
+        }
+        return formatter.toString();
+    }
+
+    protected void constructPolyLine(Map<Integer, Coordinate> coordinateMap, JSONArray array){
         array.clear();
         coordinateMap.forEach((key, value) -> {
             ArrayList<Double> temp = new ArrayList<>();
@@ -60,7 +84,7 @@ public class CoordinateService {
         });
     }
 
-    public void clearPolyLineData(Map<Integer, Coordinate> coordinateMap, JSONArray array){
+    protected void clearPolyLineData(Map<Integer, Coordinate> coordinateMap, JSONArray array){
         array.clear();
         coordinateMap.clear();
     }
@@ -70,7 +94,7 @@ public class CoordinateService {
         return calculateDistance(coordinateMap);
     }
 
-    public Stream calculateDistance(Map<Integer, Coordinate> coordinateMap){
+    protected Stream calculateDistance(Map<Integer, Coordinate> coordinateMap){
         //TODO -- Implement windowing on hashmap for haversine calculation
         List keySet = setToList(coordinateMap);
         return sliding(keySet, 2);
@@ -98,38 +122,20 @@ public class CoordinateService {
         return d;
     }
 
-    protected static List setToList(Map map){
+    protected List setToList(Map map){
         //entry set to list for window purposes
         List returnList = new ArrayList();
         returnList.addAll(map.keySet());
         return returnList;
     }
 
-    protected static <T> Stream<List<T>> sliding(List<T> list, int size){
+    protected <T> Stream<List<T>> sliding(List<T> list, int size){
         //TODO -- Revisit
         if (size > list.size()){
             return Stream.empty();
         } else {
             //returns a ranged intstream of the list(window)
             return IntStream.range(0, list.size() - size + 1).mapToObj(start -> list.subList(start, start + size));
-        }
-    }
-
-    protected static byte[] coordinateToByteArray(Coordinate coordinate) throws IOException {
-        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-        ObjectOutput objectOutput = null;
-        try {
-            objectOutput = new ObjectOutputStream(byteOutput);
-            objectOutput.writeObject(coordinate);
-            objectOutput.flush();
-            byte[] coordinateSerialized = byteOutput.toByteArray();
-            return coordinateSerialized;
-        } finally {
-            try {
-                byteOutput.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
