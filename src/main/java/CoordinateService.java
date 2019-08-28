@@ -13,7 +13,7 @@ public class CoordinateService {
     private int count = 0;
     private JSONArray polyArray = new JSONArray();
 
-    protected void add(String id, String path_route_id, double latitude, double longitude, long timestamp) {
+    protected void add(String path_route_id, double latitude, double longitude, long timestamp) {
         int currentId = count++;
         Coordinate coordinate = new Coordinate(path_route_id, latitude, longitude, timestamp);
         coordinateMap.put(currentId, coordinate);
