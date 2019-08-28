@@ -18,47 +18,51 @@ public class Main {
         //stub in authentication using //before in order to authorize posting routes/coordinates/other shit
         //general practical login methods
 
-        post("/coordinate", (request, response) -> {
-            response.header("Access-Control-Allow-Origin", "*");
-            response.header("Access-Control-Allow-Methods", "GET");
-            response.type("application/json");
+        post("/coordinate", (req, res) -> {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Methods", "GET");
+            res.type("application/json");
 
             return "";
         });
 
-        get("/polyline",(request, response) -> {
-            response.header("Access-Control-Allow-Origin", "*");
-            response.header("Access-Control-Allow-Methods", "GET");
-            response.type("application/json");
+        get("/polyline",(req, res) -> {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Methods", "GET");
+            res.type("application/json");
             return coordinateService.returnPolyLine();
-
         });
 
-        get("/token", (request, response) -> {
-            response.type("application/json");
+        get("/token", (req, res) -> {
+            res.type("application/json");
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode requestNode = objectMapper.readTree(request.bodyAsBytes());
+            JsonNode requestNode = objectMapper.readTree(req.bodyAsBytes());
             return "";
         });
 
-        post("/login", (request, response) -> {
-           response.type("application/json");
+        post("/login", (req, res) -> {
+           res.type("application/json");
            ObjectMapper objectMapper = new ObjectMapper();
-           JsonNode postNode = objectMapper.readTree(request.bodyAsBytes());
+           JsonNode postNode = objectMapper.readTree(req.bodyAsBytes());
             return "";
         });
 
-        post("/register", (request, response) -> {
+        get("/login", (req, res) -> {
+            res.type("application/json");4
+            res.redirect("login.html");
+        });
+
+        post("/register", (req, res) -> {
             //stub out generation here
             //user provides on registration page, username + password
             //need to stub out session shit as well but that needs to go in
             //login and transactional pages...
 
-            response.type("application/json");
+            res.type("application/json");
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode postNode = objectMapper.readTree(request.bodyAsBytes());
+            JsonNode postNode = objectMapper.readTree(req.bodyAsBytes());
             if(loginService.createUser(postNode)){
-                response.redirect("index.html");
+                res.redirect("index.html");
             } else {
                 //stubbed to null for now?
                 return null;
