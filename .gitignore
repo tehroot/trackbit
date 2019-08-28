@@ -12,3 +12,4 @@ lib/
 /out/
 /target/
 *.idea
+/resources/settings.json
