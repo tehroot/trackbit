@@ -4,14 +4,19 @@ import java.util.ArrayList;
 public class LoginService {
     PsqlConnector psqlConnector = new PsqlConnector();
     //static UtilityMethods utilityMethods = new UtilityMethods();
+    //Implementation of sessioning for users inside the login service in order to
+    //facilitate session management and cookie generation required
+
     protected void login(JsonNode jsonNode){
 
     }
 
     protected Boolean createUser(JsonNode jsonNode){
         ArrayList<byte[]> hashed;
-        String email = jsonNode.get("email").asText();
-        String password = jsonNode.get("password").asText();
+        ArrayList<JsonNode> collect = new ArrayList<>();
+        //JSONnode shit in here, need to fix in javascript, server no problem
+        String email = jsonNode.findValue("email").asText();
+        String password = jsonNode.findValue("password").asText();
         hashed = UtilityMethods.PBKDF2(password, UtilityMethods.generateSalt());
         try{
             if(checkUser(jsonNode) == false){
@@ -33,7 +38,7 @@ public class LoginService {
         } else {
             return true;
         }
-    }
+     }
 
     protected Boolean checkUserLogin(JsonNode jsonNode){
         ArrayList result = psqlConnector.returnUserFromDb(jsonNode.get("email").asText());

@@ -1,7 +1,6 @@
-<script>
 $.fn.loadMap = function(){
     //url location
-    var coordinateURL = "http://localhost:8080/polyline"
+    var coordinateURL = "http://localhost:6555/polyline"
     var latlngs = new Array();
     $.ajax({
         url: coordinateURL,
@@ -30,13 +29,17 @@ $.fn.login = function(){
     $("form").on("submit", function(event){
         event.preventDefault();
         var fields = $(this).serializeArray();
+        var data = {};
+        $(fields).each(function(index, obj){
+            data[obj.name] = obj.value;
+        });
         if(fields.length == 2){
             $.ajax({
                 type: "post",
-                url:"https://markcardish.net:6555/register"
+                url: "http://localhost:6555/register",
                 contentType: "application/json",
                 dataType: "text",
-                data: json,
+                data: JSON.stringify(data),
             success: function(response){
                 alert("Posted");
             },
@@ -48,4 +51,3 @@ $.fn.login = function(){
         }
     });
 }
-</script>
