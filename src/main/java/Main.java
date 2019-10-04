@@ -36,14 +36,33 @@ public class Main {
             res.type("application/json");
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode requestNode = objectMapper.readTree(req.bodyAsBytes());
+            //login service generate, store, and return token for user from a get request
+            //checks database for a token
+            //TODO -- Add token field to user database table
             return "";
+        });
+
+        before("/token", (req, res) -> {
+            User u = LoginService.getSessionAuth(req);
+            //tokenization for applications for signing post requests without submitting user credentials
+            //token generation allows for division of login
+            //if no session exists before logging in the service
+            //requires a login in order for it to work
+            if(u == null){
+                halt(401);
+            }
         });
 
         post("/login", (req, res) -> {
            res.type("application/json");
            ObjectMapper objectMapper = new ObjectMapper();
            JsonNode postNode = objectMapper.readTree(req.bodyAsBytes());
-            return "";
+           if(loginService.checkUserLogin(postNode, req)){
+                res.redirect("index.html");
+           } else {
+               halt(401);
+           }
+           return "";
         });
 
         get("/login", (req, res) -> {
@@ -57,7 +76,6 @@ public class Main {
             //user provides on registration page, username + password
             //need to stub out session shit as well but that needs to go in
             //login and transactional pages...
-
             res.type("application/json");
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode postNode = objectMapper.readTree(req.bodyAsBytes());
@@ -65,8 +83,14 @@ public class Main {
                 res.redirect("index.html");
             } else {
                 //stubbed to null for now?
-                return null;
+                halt(401);
             }
+            return "";
+        });
+
+        get("/register", (req, res) -> {
+            res.type("application/json");
+            res.redirect("register.html");
             return "";
         });
     }

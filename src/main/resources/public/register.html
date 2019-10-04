@@ -13,7 +13,7 @@
 </head>
 <script>
 	$(document).ready(function(){
-		$.fn.login();
+		$.fn.register();
 	});
 </script>
 <body>
@@ -21,28 +21,12 @@
 		<a class="navbar-brand text-light" href="#">Trackbit</a>
   		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
    		 <span class="navbar-toggler-icon"></span>
-  		</button>
-  		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-  			<ul class="navbar-nav mr-auto">
-  				<li class="nav-item" dropdown>
-  					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-  						Profile
-  					</a>
-  					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-  						<a class="dropdown-menu" aria-labelledby="navbarDropdown"></a>
-  						<a class="dropdown-item" href="#">Data</a>
-  						<a class="dropdown-item" href="#">Settings</a>
-  						<div class="dropdown-divider"></div>
-  						<a class="dropdown-item" href="#">Log Out</a>
-  					</div>
-  				</li>
-  			</ul>
-  		</div>
+  </button>
 	</nav>
 	<div class="container h-100 d-flex justify-content-center align-items-center bg-light">
 	<div class="d-flex justify-content-center">
 	<form>
-		<div class="warning" id="invalidLogin"></div>
+		<div class="warning" id="invalidRegistration"></div>
 		<div class="form-group">
 			<label for="email">Email Address</label>
 			<input type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" class="form-control" id="email-input" aria-describedby="email" placeholder="Enter Email here" required name="email">
@@ -50,11 +34,7 @@
 		</div>
 		<div class="form-group">
 			<label for="passwordInput">Password</label>
-			<input type="password" class="form-control" id="password" placeholder="Enter password here" name="password" required>
-		</div>
-		<div class="form-group">
-			<input type="checkbox" class="form-check-input" id="keepLoggedIn" name="stayLoggedIn">
-			<label class="form-check-label" for="keepLoggedIn">Stay Logged In?</label>
+			<input type="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" class="form-control" id="password" placeholder="Enter password here" name="password" required>
 		</div>
 		<button type="submit" class="btn btn-primary">Submit</button>
 	</form>

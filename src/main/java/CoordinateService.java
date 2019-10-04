@@ -19,7 +19,6 @@ public class CoordinateService {
         coordinateMap.put(currentId, coordinate);
     }
 
-    //TODO -- SQL DESIGN FOR CREATING A NEW ROUTE USING PSQLCONNECTOR
     protected String createNewRoute() throws IOException{
         //GENERATE UUID
         //PASSBACK UUID TO WATCH FOR USAGE
@@ -27,7 +26,6 @@ public class CoordinateService {
         return "";
     }
 
-    //TODO --
     protected JSONObject getAllRoutes(Map<String, HashMap> storedRoutes){
         JSONObject obj = new JSONObject();
         storedRoutes.forEach((key, value) -> {
@@ -44,9 +42,6 @@ public class CoordinateService {
         long now = Instant.now().toEpochMilli();
         //not sure what I remember that this is supposed to do exactly?
         //String hash = createNewRoute(coordinateMap, storedRoutes);
-            //TODO - NOTED HERE FOR SQL CHANGES(TRANSACTION)
-            //TODO - CONSTRUCT SQL COMMAND TO TRANSACT BOTH ROUTES AND ROUTE AREAS
-            //TODO - PARAMETERIZE WITH USERNAME STUFF CORRELATES WITH USER ID
         return "";
     }
 
@@ -90,7 +85,6 @@ public class CoordinateService {
     }
 
     protected Stream returnDistance(){
-        //TODO -- Buffout
         return calculateDistance(coordinateMap);
     }
 

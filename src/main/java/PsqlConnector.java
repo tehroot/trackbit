@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class PsqlConnector {
 
-    public Connection initConnection() throws SQLException {
+    public static Connection initConnection() throws SQLException {
         JsonNode params = UtilityMethods.settingsRead();
         String user = params.get("user").asText();
         String password = params.get("password").asText();
@@ -17,7 +17,7 @@ public class PsqlConnector {
 
     //MOVE THIS TO THE COORDINATE CONTROLLER SECTION
     //user_id generation -- required?
-    public  PreparedStatement writeCoordinateToDb(int user_id, String ID, String path_route_id, double latitude, double longitude, Timestamp timestamp){
+    public PreparedStatement writeCoordinateToDb(int user_id, String ID, String path_route_id, double latitude, double longitude, Timestamp timestamp){
         String coordinateInsert = "INSERT INTO route (id, path_route_id, latitude, longitude, timestamp) VALUES (?, ?, ?, ?, ?)";
         String checkRouteIDQuery = "SELECT (path_route_id) FROM routes WHERE (path_route_id) = ?";
 
@@ -28,7 +28,7 @@ public class PsqlConnector {
         return null;
     }
 
-    public  Boolean writeUserToDb(ArrayList<byte[]> hashes, String email){
+    public static Boolean writeUserToDb(ArrayList<byte[]> hashes, String email){
         //insert checking for DB consistency, no duplicate emails, if duplicate detected
         //raise error above to raise to main to throw an error out to JS frontend...
         if (returnUserFromDb(email) == null){
@@ -48,9 +48,9 @@ public class PsqlConnector {
         }
     }
 
-    public ArrayList returnUserFromDb(String email){
+    public static ArrayList returnUserFromDb(String email){
         try{
-            String selectUser = "SELECT FROM user_accounts WHERE email = ?";
+            String selectUser = "SELECT * FROM user_accounts WHERE email = ?";
             PreparedStatement userSelect = initConnection().prepareStatement(selectUser);
             userSelect.setString(1, email);
             ResultSet rs = returnDB(userSelect);
@@ -78,7 +78,7 @@ public class PsqlConnector {
         return null;
     }
 
-    public Boolean transactDB(PreparedStatement statement) throws SQLException {
+    public static Boolean transactDB(PreparedStatement statement) throws SQLException {
         int i = statement.executeUpdate();
         if(i == 1){
             return true;
@@ -87,7 +87,7 @@ public class PsqlConnector {
         }
     }
 
-    public ResultSet returnDB(PreparedStatement statement) throws SQLException {
+    public static ResultSet returnDB(PreparedStatement statement) throws SQLException {
         ResultSet rs = statement.executeQuery();
         if(rs.next()){
             return rs;

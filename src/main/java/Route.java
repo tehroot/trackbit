@@ -6,7 +6,7 @@ public class Route {
 
     public Route(){}
 
-    public Route(String id, String path_route_id, ArrayList coordinates){
+    public Route(String path_route_id, ArrayList coordinates){
         this.path_route_id = path_route_id;
         this.coordinates = coordinates;
     }

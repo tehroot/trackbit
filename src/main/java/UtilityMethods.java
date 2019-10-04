@@ -11,6 +11,7 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class UtilityMethods {
     public static ArrayList commandLineArgs(String[] args){
@@ -88,10 +89,18 @@ public class UtilityMethods {
 
     public static Boolean validatePBKDF2(String password, byte[] storedSalt, byte[] storedHash){
         ArrayList<byte[]> list = PBKDF2(password, storedSalt);
-        if(list.get(0) == storedHash) {
+        if(Arrays.equals(list.get(1), storedHash)) {
             return true;
         } else {
             return false;
         }
     }
+
+    public static String byteToHex(byte[] inputArray){
+        for(byte b : inputArray){
+
+        }
+    }
+
+
 }

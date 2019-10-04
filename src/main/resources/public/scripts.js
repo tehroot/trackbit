@@ -25,11 +25,13 @@ $.fn.loadMap = function(){
     // load a tile layer
 }
 
-$.fn.login = function(){
+$.fn.register = function(){
     $("form").on("submit", function(event){
         event.preventDefault();
         var fields = $(this).serializeArray();
         var data = {};
+        //strip the serialization artifacts into a new field array
+        //the length is kind of irrelevant
         $(fields).each(function(index, obj){
             data[obj.name] = obj.value;
         });
@@ -41,6 +43,7 @@ $.fn.login = function(){
                 dataType: "text",
                 data: JSON.stringify(data),
             success: function(response){
+                //redirect from here to index with user session???
                 alert("Posted");
             },
             error: function(ajaxRequest, statusText, errorMessage){
@@ -51,3 +54,39 @@ $.fn.login = function(){
         }
     });
 }
+
+$.fn.login = function(){
+    $("form").on("submit", function(event){
+        event.preventDefault();
+        var fields = $(this).serializeArray();
+        var data = {};
+        //strip the serialization artifacts into a new field array
+        //the length is kind of irrelevant
+        $(fields).each(function(index, obj){
+            data[obj.name] = obj.value;
+        });
+        console.log(data);
+        if(fields.length == 2 || fields.length == 3){
+            $.ajax({
+                type: "post",
+                url: "http://localhost:6555/login",
+                contentType: "application/json",
+                dataType: "text",
+                data: JSON.stringify(data),
+            success: function(response){
+                //redirect from here to index with user session???
+                alert("Posted");
+            },
+            error: function(ajaxRequest, statusText, errorMessage){
+                if(ajaxRequest.status == 401){
+                    $("#invalidLogin").css("visibility", "visible");
+                    $("#invalidLogin").text("Invalid Login");
+                }
+            }
+            });
+            
+        this.reset();
+        }
+    });
+}
+
