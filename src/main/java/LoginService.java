@@ -62,7 +62,8 @@ public class LoginService {
         }
         return false;
     }
-
+    //CURRENT TODO
+    //token for session managment, remember me stuff
     protected static String issueToken(Request req){
         if(getSessionAuth(req) != null){
            //512bit token to reduce possible generation attacks for authentication of data??
